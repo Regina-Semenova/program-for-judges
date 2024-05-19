@@ -1,0 +1,20 @@
+header {
+    background-color: #0977df;
+}
+
+footer {
+    background-color: #0977df;
+}
+
+header .nav-link {
+    color: #feffe9;
+}
+
+footer .nav-link {
+    color: #feffe9;
+}
+
+body {
+    background-color: #ceefff;
+    color: #2c0330;
+}

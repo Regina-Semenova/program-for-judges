@@ -1,0 +1,66 @@
+{% extends "generic.html" %}
+{% load static %}
+
+{% block content %}
+
+{% for group in user.groups.all %}
+{% if group.name == 'judges' %}
+<!-- Table (judge) -->
+<div class="table-responsive">
+  <table class="table table-sm">
+      <thead>
+          <tr>
+              <th scope="col">#</th>
+              <th scope="col">Номер дела</th>
+              <th scope="col">Статус выполнения</th>
+              <th scope="col">Дата создания</th>
+              <th scope="col"></th>
+          </tr>
+      </thead>        
+      <tbody>
+          {% for q in queries %}
+          <tr>
+            <th scope="row">{{ q.query_id }}</th>
+            <td>{{ q.case }}</td>
+            <td>{{ q.status }}</td>
+            <td>{{ q.query_creation_date|date:"d F Y" }}</td>
+            <td> <a href="{% url 'query_edit' q.query_id %}" class="text-body-secondary">Редактировать</a> </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
+<!-- Table (judge) end -->
+{% endif %}
+
+{% if group.name == 'assistants' %}
+<!-- Table (assistant) -->
+<div class="table-responsive">
+  <table class="table table-sm">
+      <thead>
+          <tr>
+              <th scope="col">#</th>
+              <th scope="col">Номер дела</th>
+              <th scope="col">Приоритет</th>
+              <th scope="col">Дата создания</th>
+              <th scope="col"></th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for q in queries %}
+          <tr>
+            <th scope="row">{{ q.query_id }}</th>
+            <td>{{ q.case }}</td>
+            <td>{{ q.priority }}</td>
+            <td>{{ q.query_creation_date|date:"d F Y" }}</td>
+            <td> <a href="{% url 'query_edit' q.query_id %}" class="text-body-secondary">Редактировать</a> </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
+<!-- Table (assistant) end -->
+{% endif %}
+{% endfor %}
+
+{% endblock %}
