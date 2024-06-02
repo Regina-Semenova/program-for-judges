@@ -58,11 +58,11 @@ def edit(request, qid):
     qry = Query.objects.get(query_id=qid)
     if (request.user.groups.filter(name='judges').exists()):
         username = Judge.objects.get(user=request.user.id).judge_name
-        if (qry.judge != Judge.objects.get(user=request.user.id).judge_id):
+        if (qry.judge != Judge.objects.get(user=request.user.id)):
             return HttpResponseRedirect('/')
     if (request.user.groups.filter(name='assistants').exists()):
         username = Assistant.objects.get(user=request.user.id).assistant_name
-        if (qry.judge != Assistant.objects.get(user=request.user.id).judge_id):
+        if (qry.judge != Judge.objects.get(assistant=Assistant.objects.get(user=request.user.id))):
             return HttpResponseRedirect('/')
     if request.method == 'POST':
         form = EditQueryForm(data=UPOST(request.POST, qry), user=request.user)
