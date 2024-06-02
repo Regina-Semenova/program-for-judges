@@ -28,35 +28,42 @@ def login(request):
 
 @login_required(login_url='login')
 def create_new(request):
-    username = Judge.objects.get(user=request.user.id).judge_name
-    if request.method == 'POST':
-        form = CreateQueryForm(data=request.POST, id=request.user.id)
-        if form.is_valid():
-            qtype = form.cleaned_data['query_type']
-            case_num = form.cleaned_data['case']
-            pri = form.cleaned_data['priority']
-            comm = form.cleaned_data['query_comments']
-            judge = Judge.objects.get(user=request.user.id)
-            new_q = Query(query_type = qtype, judge = judge, case = case_num, priority = pri, query_comments = comm)
-            new_q.save()
-            return HttpResponseRedirect('/')
+    if (request.user.groups.filter(name='judges').exists()):
+        username = Judge.objects.get(user=request.user.id).judge_name
+        if request.method == 'POST':
+            form = CreateQueryForm(data=request.POST, id=request.user.id)
+            if form.is_valid():
+                qtype = form.cleaned_data['query_type']
+                case_num = form.cleaned_data['case']
+                pri = form.cleaned_data['priority']
+                comm = form.cleaned_data['query_comments']
+                judge = Judge.objects.get(user=request.user.id)
+                new_q = Query(query_type = qtype, judge = judge, case = case_num, priority = pri, query_comments = comm)
+                new_q.save()
+                return HttpResponseRedirect('/')
+        else:
+            form = CreateQueryForm(id=request.user.id)
+
+        context = {
+            'form': form,
+            'username': username,
+        }
+
+        return render(request, 'law_app/qnew.html', context)
     else:
-        form = CreateQueryForm(id=request.user.id)
-
-    context = {
-        'form': form,
-        'username': username,
-    }
-
-    return render(request, 'law_app/qnew.html', context)
+        return HttpResponseRedirect('/')
 
 @login_required(login_url='login')
 def edit(request, qid):
+    qry = Query.objects.get(query_id=qid)
     if (request.user.groups.filter(name='judges').exists()):
         username = Judge.objects.get(user=request.user.id).judge_name
+        if (qry.judge != Judge.objects.get(user=request.user.id).judge_id):
+            return HttpResponseRedirect('/')
     if (request.user.groups.filter(name='assistants').exists()):
         username = Assistant.objects.get(user=request.user.id).assistant_name
-    qry = Query.objects.get(query_id=qid)
+        if (qry.judge != Assistant.objects.get(user=request.user.id).judge_id):
+            return HttpResponseRedirect('/')
     if request.method == 'POST':
         form = EditQueryForm(data=UPOST(request.POST, qry), user=request.user)
         if form.is_valid():
